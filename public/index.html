@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>QRIS Payment Gateway</title>
+  <meta name="description" content="Simple QRIS payment gateway powered by GoBiz transaction monitoring.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">GO<span>BIZ</span> QRIS</div>
+      <a class="docs-link" href="/docs">📚 API Docs</a>
+    </header>
+
+    <section class="hero">
+      <div>
+        <span class="badge">QRIS PAYMENT GATEWAY</span>
+        <h1>Bayar dengan QRIS.<br><span>Simple & realtime.</span></h1>
+        <p>Masukkan nominal, tampilkan QRIS, lalu status pembayaran dipantau otomatis. Setiap QRIS aktif selama <strong>15 menit</strong>.</p>
+      </div>
+      <div class="hero-orb" aria-hidden="true"></div>
+    </section>
+
+    <section class="grid">
+      <div class="card form-card">
+        <div class="card-title">Buat pembayaran</div>
+        <label for="amount">Nominal</label>
+        <div class="amount-input"><span>Rp</span><input id="amount" type="number" inputmode="numeric" min="1" step="1" value="2000"></div>
+        <button id="createBtn">Buat QRIS</button>
+        <div class="quick-note">QRIS otomatis expired 15 menit setelah dibuat. Riwayat diperbarui otomatis setiap 5 detik.</div>
+        <div id="message" class="message" hidden></div>
+      </div>
+
+      <div id="qrCard" class="card qr-card" hidden>
+        <div class="card-title">QRIS</div>
+        <div id="qrWrap" class="qr-wrap">
+          <img id="qr" alt="QRIS pembayaran">
+          <div class="payment-meta">
+            <div><small>Payment ID</small><strong id="paymentId">-</strong></div>
+            <div><small>Nominal</small><strong id="paymentAmount">-</strong></div>
+          </div>
+
+          <div class="status-row">
+            <div id="statusPill" class="status pending">MENUNGGU</div>
+            <div class="countdown-box"><small>Berlaku</small><strong id="countdown">15:00</strong></div>
+          </div>
+          <p id="statusText" class="status-text">Menunggu pembayaran…</p>
+
+          <div class="actions">
+            <button id="manualStatusBtn" class="secondary">↻ Cek Status</button>
+            <button id="cancelBtn" class="danger">Batalkan</button>
+          </div>
+          <div class="progress compact"><span id="progressBar"></span></div>
+        </div>
+
+        <div class="history-section">
+          <div class="history-title">Riwayat pembayaran</div>
+          <div id="historyEmpty" class="history-empty">Belum ada pembayaran.</div>
+          <div id="historyList" class="history-list"></div>
+        </div>
+      </div>
+    </section>
+
+
+    <footer>GoBiz QRIS Web Gateway • <a href="/docs">Dokumentasi API</a> • QRIS 15 menit</footer>
+  </main>
+  <script src="/app.js" defer></script>
+</body>
+</html>
