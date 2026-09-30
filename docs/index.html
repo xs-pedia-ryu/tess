@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>API Docs — QRIS Gateway</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{font-family:Inter,system-ui,sans-serif;color:#edf3f8;background:#0a0d12}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 10% 0%,#172235,transparent 35%),#0a0d12}.wrap{width:min(1050px,92vw);margin:auto;padding:28px 0 50px}.top{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:25px}.top a{color:#dce4ee;text-decoration:none;border:1px solid #28303c;padding:10px 13px;border-radius:12px;font-size:12px;font-weight:700}.eyebrow{display:inline-block;color:#8df0bd;font-size:11px;font-weight:800;letter-spacing:.15em}.hero h1{font-size:clamp(34px,6vw,54px);margin:12px 0}.hero p{color:#94a0b0;line-height:1.7;max-width:740px}.note{margin:20px 0;padding:14px 16px;border:1px solid rgba(141,240,189,.16);background:rgba(141,240,189,.05);border-radius:15px;color:#b9c7d5;font-size:13px}.endpoint{margin-top:18px;border:1px solid #202733;border-radius:20px;background:rgba(16,21,29,.82);overflow:hidden}.endpoint .head{padding:18px 20px;border-bottom:1px solid #202733;display:flex;align-items:center;gap:10px}.method{font-size:11px;font-weight:900;padding:7px 9px;border-radius:8px;background:#173426;color:#8df0bd}.method.cancel{background:#32191b;color:#ffaaa9}.path{font-family:ui-monospace,monospace;font-size:14px}.body{padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:16px}.col h3{font-size:12px;color:#8190a3;margin:0 0 8px;text-transform:uppercase;letter-spacing:.08em}.col p{margin:0 0 12px;color:#9ca8b7;font-size:13px;line-height:1.6}.code{background:#0b1017;overflow-wrap:anywhere;word-break:break-word;white-space:pre-wrap;border:1px solid #202733;border-radius:14px;padding:14px;overflow:auto;font-size:12px;line-height:1.7;color:#dce6ef;white-space:pre}.status-table{width:100%;border-collapse:collapse;margin-top:16px;font-size:13px}.status-table td,.status-table th{border-bottom:1px solid #202733;padding:10px;text-align:left}.status-table th{color:#7f8b9b}.status-table td{color:#bac5d2}.footer{margin-top:28px;color:#687486;font-size:12px}@media(max-width:800px){.body{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="top"><div><span class="eyebrow">QRIS PAYMENT GATEWAY</span><h1>API Documentation</h1></div><a href="/">← Kembali ke Web</a></div>
+    <p class="hero">API ini dibuat untuk menghubungkan website kedua kamu ke gateway QRIS. Base URL publik adalah <strong>https://xspedia-payment.vercel.app</strong>. Backend project tetap menggunakan <strong>GoBiz</strong> untuk membuat dan mengecek pembayaran. QRIS dibuat dengan masa aktif tetap <strong>15 menit</strong>.</p>
+    <div class="note"><strong>Base URL:</strong> <code>https://xspedia-payment.vercel.app</code><br>Gunakan endpoint <code>/api/v1/*</code> untuk integrasi API. <strong>Tidak memerlukan API key.</strong> Status dan cancel cukup menggunakan <code>paymentId</code>. Tidak ada <code>paymentToken</code> pada API publik.<br><br><strong>Backend:</strong> tetap memakai <strong>GoBiz</strong>. Domain API hanya alamat gateway.<br><br><strong>ID transaksi:</strong> halaman web menghasilkan <code>xiao-web-123456</code>, sedangkan request API menghasilkan <code>xiao-api-123456</code>.</div>
+
+    <section class="endpoint">
+      <div class="head"><span class="method">POST</span><span class="path">/api/payments</span><span style="margin-left:auto;color:#7d8999;font-size:11px">WEB</span></div>
+      <div class="body">
+        <div class="col"><h3>Request</h3><p>Dipakai oleh halaman web gateway. Tidak membutuhkan API key. ID akan dibuat dengan format <code>xiao-web-123456</code>.</p><div class="code">curl -X POST "https://xspedia-payment.vercel.app/api/payments" \
+  -H "Content-Type: application/json" \
+  -d '{"amount":50000}'</div></div>
+        <div class="col"><h3>Response 201</h3><div class="code">{
+  "success": true,
+  "data": {
+    "paymentId": "xiao-web-274819",
+    "amount": 50000,
+    "status": "pending",
+    "createdAt": 1788058800000,
+    "expiresAt": 1788059700000,
+    "expiresInMs": 900000,
+    "qr": "data:image/png;base64,...",
+    "qrisString": "000201..."
+  }
+}</div></div>
+      </div>
+    </section>
+
+    <section class="endpoint">
+      <div class="head"><span class="method">POST</span><span class="path">/api/v1/payments</span></div>
+      <div class="body">
+        <div class="col"><h3>Request</h3><p>Gunakan nominal dalam Rupiah. <strong>Tidak memerlukan API key.</strong> Server otomatis menetapkan expired 15 menit.</p><div class="code">curl -X POST "https://xspedia-payment.vercel.app/api/v1/payments" \\
+  -H "Content-Type: application/json" \\
+  -d '{"amount":50000}'</div></div>
+        <div class="col"><h3>Response 201</h3><div class="code">{
+  "success": true,
+  "data": {
+    "paymentId": "xiao-api-483921",
+    "amount": 50000,
+    "status": "pending",
+    "createdAt": 1788058800000,
+    "expiresAt": 1788059700000,
+    "expiresInMs": 900000,
+    "qr": "data:image/png;base64,...",
+    "qrisString": "000201..."
+  }
+}</div></div>
+      </div>
+    </section>
+
+    <section class="endpoint">
+      <div class="head"><span class="method">POST</span><span class="path">/api/v1/payments/{paymentId}/status</span></div>
+      <div class="body">
+        <div class="col"><h3>Request</h3><p>Tidak memerlukan API key dan tidak menggunakan <code>paymentToken</code>. Cukup gunakan <code>paymentId</code> pada URL. Gateway langsung melakukan live-check ke <strong>GoBiz</strong>.</p><div class="code">curl -X POST "https://xspedia-payment.vercel.app/api/v1/payments/xiao-api-483921/status" \\n  -H "Content-Type: application/json" \\n  -d '{}'</div></div>
+        <div class="col"><h3>Response 200</h3><div class="code">{
+  "success": true,
+  "data": {
+    "id": "xiao-api-483921",
+    "amount": 50000,
+    "status": "paid",
+    "createdAt": 1788058800000,
+    "expiresAt": 1788059700000,
+    "paidAt": 1788058865000,
+    "transactionId": "TX-123456"
+  }
+}</div></div>
+      </div>
+    </section>
+
+    <section class="endpoint">
+      <div class="head"><span class="method">GET</span><span class="path">/api/v1/payments/history</span></div>
+      <div class="body">
+        <div class="col"><h3>Request</h3><p>Mengambil riwayat pembayaran terbaru. <strong>Tidak memerlukan API key.</strong> Default 50 item, maksimal 100.</p><div class="code">curl "https://xspedia-payment.vercel.app/api/v1/payments/history?limit=50"</div></div>
+        <div class="col"><h3>Response 200</h3><div class="code">{
+  "success": true,
+  "data": [
+    {
+      "id": "xiao-api-483921",
+      "amount": 50000,
+      "status": "paid",
+      "createdAt": 1788058800000,
+      "expiresAt": 1788059700000,
+      "paidAt": 1788058865000,
+      "transactionId": "TX-123456",
+      "source": "api"
+    }
+  ]
+}</div></div>
+      </div>
+    </section>
+
+    <section class="endpoint">
+      <div class="head"><span class="method cancel">POST</span><span class="path">/api/v1/payments/{paymentId}/cancel</span></div>
+      <div class="body">
+        <div class="col"><h3>Request</h3><p>Membatalkan sesi QR yang masih berstatus <code>pending</code>. <strong>Tidak memerlukan API key dan tidak menggunakan paymentToken.</strong> Cukup gunakan <code>paymentId</code>.</p><div class="code">curl -X POST "https://xspedia-payment.vercel.app/api/v1/payments/xiao-api-483921/cancel" \\n  -H "Content-Type: application/json" \\n  -d '{}'</div></div>
+        <div class="col"><h3>Response 200</h3><div class="code">{
+  "success": true,
+  "data": {
+    "id": "xiao-api-483921",
+    "amount": 50000,
+    "status": "cancelled",
+    "cancelledAt": 1788058900000
+  }
+}</div></div>
+      </div>
+    </section>
+
+    <section class="endpoint">
+      <div class="head"><span class="method">GET</span><span class="path">/api/health</span></div>
+      <div class="body"><div class="col"><h3>Response</h3><div class="code">{
+  "ok": true,
+  "service": "gobiz-qris-web-gateway",
+  "time": "2026-09-29T03:00:00.000Z"
+}</div></div></div>
+    </section>
+
+    <h2 style="margin-top:34px">Status pembayaran</h2>
+    <table class="status-table"><thead><tr><th>Status</th><th>Arti</th></tr></thead><tbody>
+      <tr><td>pending</td><td>QR aktif, menunggu pembayaran.</td></tr>
+      <tr><td>paid</td><td>Pembayaran terdeteksi di transaksi GoBiz.</td></tr>
+      <tr><td>expired</td><td>Lewat 15 menit dan belum terbayar.</td></tr>
+      <tr><td>cancelled</td><td>Sesi QR dibatalkan melalui endpoint cancel.</td></tr>
+    </tbody></table>
+
+    <div class="note"><strong>Catatan cancel:</strong> endpoint cancel membatalkan <em>sesi gateway</em>. Kode ini tidak mengklaim membatalkan transaksi GoBiz yang sudah berhasil/settlement karena modul yang disertakan tidak menyediakan endpoint pembatalan transaksi tersebut.</div>
+    <div class="footer">API publik tidak memerlukan API key maupun paymentToken. Status/cancel cukup menggunakan paymentId. QRIS yang sudah expired harus dibuat ulang. Backend gateway tetap memakai GoBiz.</div>
+  </main>
+</body>
+</html>
