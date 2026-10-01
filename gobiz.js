@@ -21,9 +21,13 @@ const __dirname  = path.dirname(__filename);
 const DATA_DIR   = process.env.DATA_DIR
    ? path.resolve(process.env.DATA_DIR)
    : (process.env.VERCEL ? '/tmp' : path.join(__dirname, 'data'));
+
+// Keep the default cache location identical to the reference ZIP:
+// project root, next to gobiz.js. It can still be overridden for persistent
+// storage on Railway/Vercel by setting GOPAY_CACHE_FILE.
 const CACHE_FILE = process.env.GOPAY_CACHE_FILE
    ? path.resolve(process.env.GOPAY_CACHE_FILE)
-   : path.join(DATA_DIR, '.gopay_cache.json');
+   : path.join(__dirname, '.gopay_cache.json');
 const ENV_FILE   = path.join(__dirname, '.env');
 
 /**
@@ -432,6 +436,14 @@ export default class GoPayMerchant {
          updatedCache.gopay_merchant_id = this.merchantId;
          writeCache(updatedCache);
       }
+
+      // Always synchronize the currently valid auth state to the cache,
+      // regardless of whether it came from constructor options, GOPAY_TOKEN,
+      // an existing cache entry, or a fresh login.
+      const finalCache = readCache();
+      finalCache.gopay_token = this.token;
+      if (this.merchantId) finalCache.gopay_merchant_id = this.merchantId;
+      writeCache(finalCache);
 
       this._initialized = true;
    }
